@@ -3,7 +3,7 @@
 /* Brand tokens from https://f00.sh/theme/f00-theme.css */
 @theme {
   --font-display: var(--f00-font-display);
-  --font-sans: var(--f00-font-body);
+  --font-sans: var(--f00-font-mono);
   --font-mono: var(--f00-font-mono);
   --color-fg: var(--f00-fg);
   --color-bg: var(--f00-bg);
