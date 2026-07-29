@@ -149,7 +149,7 @@ export function MethodologyPage() {
           </Section>
 
           <Section n="6" title="X profile prefill (optional)">
-            <p className="rounded-md border border-border-strong bg-surface-2/50 px-3 py-3 text-fg/90">
+            <p className="panel-soft px-3 py-3 text-fg/90">
               Scope: public profile aggregates only — post count, likes, media count, following,
               followers, bio text, account age. We do not ingest private data, DMs, or a full
               post-text corpus (authenticated timeline access is required for that and is not used
