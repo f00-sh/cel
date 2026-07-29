@@ -19,3 +19,7 @@ Static frontend (shipped build under `site/`) + Cloudflare Pages Functions (Type
 ## Public copy
 
 Product-only. No agent/process/DNS chatter on the site.
+
+## Theme
+
+Brand tokens/fonts from hub only: `https://f00.sh/theme/f00-theme.css` (white on black, Onyx). Do not redefine brand colors/fonts locally.

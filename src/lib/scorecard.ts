@@ -40,7 +40,7 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
 
-  ctx.fillStyle = "#09090b";
+  ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, w, h);
   const g = ctx.createRadialGradient(w * 0.5, 0, 40, w * 0.5, 0, h * 0.9);
   g.addColorStop(0, "rgba(244,244,245,0.07)");
@@ -53,26 +53,26 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
 
   const labels = pathLabels(input.path);
   ctx.fillStyle = "#71717a";
-  ctx.font = "500 22px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = "500 22px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText("CEL INDEX  ·  PRODUCT MODEL", 64, 80);
   ctx.fillStyle = "#f4f4f5";
-  ctx.font = "600 42px Fraunces, Georgia, serif";
+  ctx.font = "600 42px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText(labels.full, 64, 140);
   if (input.handle) {
     ctx.fillStyle = "#a1a1aa";
-    ctx.font = "500 24px 'IBM Plex Mono', ui-monospace, monospace";
+    ctx.font = "500 24px Onyx, 'Times New Roman', Times, serif";
     ctx.fillText(`@${input.handle.replace(/^@/, "")}`, 64, 178);
   }
   ctx.fillStyle = "#f4f4f5";
-  ctx.font = "600 140px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = "600 140px Onyx, 'Times New Roman', Times, serif";
   const score = input.score.toFixed(1);
   ctx.fillText(score, 64, 340);
   const sw = ctx.measureText(score).width;
   ctx.fillStyle = "#71717a";
-  ctx.font = "500 42px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = "500 42px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText("/ 100", 64 + sw + 16, 340);
   ctx.fillStyle = "#e4e4e7";
-  ctx.font = "600 36px Fraunces, Georgia, serif";
+  ctx.font = "600 36px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText(input.tierTitle, 64, 400);
 
   ctx.fillStyle = "#18181b";
@@ -83,10 +83,10 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
   roundRect(ctx, 64, 440, w - 128, 72, 12);
   ctx.stroke();
   ctx.fillStyle = "#d4d4d8";
-  ctx.font = "500 26px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = "500 26px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText("F = I · (D − S)₊ · B · σ(C) · ρ · Ψ", 88, 486);
   ctx.fillStyle = "#a1a1aa";
-  ctx.font = "400 20px 'IBM Plex Sans', system-ui, sans-serif";
+  ctx.font = "400 20px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText(
     `F = ${input.F.toFixed(4)}   τ = ${input.tau.toFixed(2)}   max: ${input.highest}   min: ${input.lowest}`,
     64,
@@ -105,24 +105,28 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
     roundRect(ctx, x, 590, fill, 28, 6);
     ctx.fill();
     ctx.fillStyle = "#71717a";
-    ctx.font = "500 14px 'IBM Plex Mono', ui-monospace, monospace";
+    ctx.font = "500 14px Onyx, 'Times New Roman', Times, serif";
     ctx.fillText(f.key, x + 8, 609);
   });
 
   ctx.fillStyle = "#52525b";
-  ctx.font = "400 16px 'IBM Plex Mono', ui-monospace, monospace";
+  ctx.font = "400 16px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText("self-report · formal product · not a diagnosis", 64, 648);
   return canvas;
+}
+
+export async function scorecardBlob(input: ScorecardInput): Promise<Blob> {
+  const canvas = drawScorecard(input);
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png");
+  });
 }
 
 export async function downloadScorecard(
   input: ScorecardInput,
   filename?: string,
 ): Promise<Blob> {
-  const canvas = drawScorecard(input);
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png");
-  });
+  const blob = await scorecardBlob(input);
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -132,4 +136,27 @@ export async function downloadScorecard(
   a.remove();
   URL.revokeObjectURL(url);
   return blob;
+}
+
+/** Best-effort: put PNG on clipboard so user can paste into X. */
+export async function copyImageToClipboard(blob: Blob): Promise<boolean> {
+  try {
+    if (!navigator.clipboard || typeof ClipboardItem === "undefined") return false;
+    // Some browsers require ClipboardItem value to be a Promise<Blob>
+    const item = new ClipboardItem({
+      "image/png": blob,
+    });
+    await navigator.clipboard.write([item]);
+    return true;
+  } catch {
+    try {
+      const item = new ClipboardItem({
+        "image/png": Promise.resolve(blob),
+      });
+      await navigator.clipboard.write([item]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

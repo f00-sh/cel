@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
+/* Brand tokens from https://f00.sh/theme/f00-theme.css */
 @theme {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --color-fg: #f4f4f5;
-  --color-bg: #09090b;
-  --color-muted: #a1a1aa;
-  --color-faint: #71717a;
-  --color-surface: #141416;
-  --color-surface-2: #1f1f23;
-  --color-border: #2a2a2e;
+  --font-display: var(--f00-font-family);
+  --font-sans: var(--f00-font-family);
+  --font-mono: var(--f00-font-family);
+  --color-fg: var(--f00-fg);
+  --color-bg: var(--f00-bg);
+  --color-muted: var(--f00-muted);
+  --color-faint: var(--f00-faint);
+  --color-surface: var(--f00-bg-elevated);
+  --color-surface-2: var(--f00-bg-panel);
+  --color-border: var(--f00-line);
   --color-border-strong: #3f3f46;
-  --color-accent-soft: #e4e4e7;
-  --color-ring: #fafafa;
-  --color-good: #a3e635;
-  --color-warn: #fbbf24;
-  --color-soft: #a78bfa;
+  --color-accent-soft: var(--f00-accent-soft);
+  --color-ring: var(--f00-fg);
+  --color-good: var(--f00-fg);
+  --color-warn: var(--f00-muted);
+  --color-soft: var(--f00-muted);
 }
 
 html,
@@ -55,9 +56,9 @@ body {
 
 .poster-bg {
   background:
-    radial-gradient(900px 480px at 50% -8%, rgba(244, 244, 245, 0.07), transparent 58%),
-    radial-gradient(700px 420px at 100% 20%, rgba(167, 139, 250, 0.05), transparent 50%),
-    radial-gradient(600px 360px at 0% 80%, rgba(163, 230, 53, 0.035), transparent 45%),
+    radial-gradient(900px 480px at 50% -8%, rgba(255, 255, 255, 0.07), transparent 58%),
+    radial-gradient(700px 420px at 100% 20%, rgba(255, 255, 255, 0.03), transparent 50%),
+    radial-gradient(600px 360px at 0% 80%, rgba(255, 255, 255, 0.02), transparent 45%),
     var(--color-bg);
 }
 
