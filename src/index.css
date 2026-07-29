@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Brand: f00-theme-14 Heartbox — Onyx brand · zine body · chip headers */
+/* Brand: f00-theme.css Heartbox — Onyx brand · zine body · chip headers */
 @theme {
   --font-display: var(--f00-font-chip, ui-monospace, monospace);
   --font-sans: var(--f00-font-zine, ui-monospace, monospace);
