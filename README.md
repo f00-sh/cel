@@ -10,9 +10,9 @@ F = I · (D − S)₊ · B · σ(k(C − C₀)) · ρ(L, P, M) · Ψ(R)
 
 - **Frontend:** React + TypeScript + Vite + Tailwind v4
 - **Host:** Cloudflare Pages (`f00-cel`) → https://cel.f00.sh
-- **X import:** Pages Function `POST /api/x-import` (optional `X_BEARER_TOKEN`)
+- **X import:** Pages Function `POST /api/x-import` — public profile aggregates via fxtwitter/vxtwitter (no developer token required). Optional `X_BEARER_TOKEN` for official X API fallback.
 
-Source lives under `src/`. This is a reconstruction from the production product model and UI (original session tree was not on disk).
+Source lives under `src/`.
 
 ## Develop
 
@@ -26,12 +26,6 @@ npm run dev
 ```bash
 npm run build
 npx wrangler pages deploy dist --project-name=f00-cel --branch=main
-```
-
-Optional:
-
-```bash
-npx wrangler pages secret put X_BEARER_TOKEN --project-name=f00-cel
 ```
 
 ## Layout

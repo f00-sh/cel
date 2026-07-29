@@ -1,7 +1,9 @@
 /**
- * Optional X profile prefill for Cel Index.
+ * X profile prefill for Cel Index.
  * POST /api/x-import  { "handle": "username" }
- * Secret: X_BEARER_TOKEN (X API v2)
+ *
+ * Primary: public fxtwitter/vxtwitter profile APIs (no token).
+ * Optional: X_BEARER_TOKEN for official X API v2 if set.
  */
 
 type Estimated = {
@@ -30,6 +32,18 @@ type Profile = {
   traces: Trace[];
 };
 
+type Metrics = {
+  followers: number;
+  following: number;
+  tweets: number;
+  likes: number;
+  media: number;
+  createdAt?: string;
+  name?: string;
+  bio?: string;
+  avatar?: string;
+};
+
 function clamp01(n: number): number {
   if (!Number.isFinite(n)) return 0;
   return Math.min(1, Math.max(0, n));
@@ -46,37 +60,30 @@ function normalizeHandle(raw: unknown): string | null {
   return h;
 }
 
-function estimateFromMetrics(
-  handle: string,
-  metrics: {
-    followers_count?: number;
-    following_count?: number;
-    tweet_count?: number;
-    like_count?: number;
-  },
-  bio: string,
-  avatar?: string,
-  name?: string,
-  createdAt?: string,
-): Profile {
-  const followers = metrics.followers_count ?? 0;
-  const following = metrics.following_count ?? 0;
-  const tweets = metrics.tweet_count ?? 0;
-  const likes = metrics.like_count ?? 0;
+function estimate(handle: string, m: Metrics): Profile {
+  const followers = m.followers;
+  const following = m.following;
+  const tweets = m.tweets;
+  const likes = m.likes;
+  const media = m.media;
+  const bio = m.bio || "";
 
-  let accountDays = 365 * 3;
-  if (createdAt) {
-    const ms = Date.now() - Date.parse(createdAt);
-    if (Number.isFinite(ms) && ms > 0) accountDays = Math.max(30, ms / 86400000);
+  let accountDays = 365 * 2;
+  if (m.createdAt) {
+    const ms = Date.now() - Date.parse(m.createdAt);
+    if (Number.isFinite(ms) && ms > 0) accountDays = Math.max(14, ms / 86400000);
   }
   const postsPerDay = tweets / accountDays;
   const likesPerDay = likes / accountDays;
+  const mediaRatio = tweets > 0 ? media / tweets : 0;
 
+  // Î = 0.45·r + 0.25·v + 0.30·f
   const r = log01(postsPerDay * 30, 120);
   const v = log01(tweets, 50_000);
   const f = log01(following, 5_000);
   const onlineLife = clamp01(0.45 * r + 0.25 * v + 0.3 * f);
 
+  // Ĉ from bio keywords + volume + media/post
   const bioL = bio.toLowerCase();
   const keywords = [
     "lonely",
@@ -89,23 +96,26 @@ function estimateFromMetrics(
     "forever alone",
     "no bf",
     "no gf",
+    "cel",
   ];
   const keywordHits = keywords.filter((k) => bioL.includes(k)).length;
-  // media/post ratio unavailable without media_count field; volume proxy only
   const identityContent = clamp01(
-    0.35 * Math.min(1, keywordHits / 3) +
-      0.4 * v +
-      0.25 * log01(tweets / Math.max(1, following), 50),
+    0.3 * Math.min(1, keywordHits / 3) +
+      0.35 * v +
+      0.2 * clamp01(mediaRatio * 2) +
+      0.15 * log01(tweets / Math.max(1, following), 50),
   );
 
+  // M̂ followers + asymmetry
   const followAsym =
     followers + following === 0
       ? 0.5
       : following / Math.max(1, followers + following);
   const marketPressure = clamp01(0.55 * log01(followers, 100_000) + 0.45 * followAsym);
 
-  const heat =
-    (bioL.match(/hate|rage|angry|despair|depressed|kill|worthless/g) || []).length;
+  // R̂ likes/day + bio heat + post rate
+  const heat = (bioL.match(/hate|rage|angry|despair|depressed|kill|worthless|manic/g) || [])
+    .length;
   const affectLoad = clamp01(
     0.4 * log01(likesPerDay * 30, 500) + 0.25 * Math.min(1, heat / 2) + 0.35 * r,
   );
@@ -121,16 +131,16 @@ function estimateFromMetrics(
     {
       field: "onlineLife",
       modelSymbol: "I",
-      mapping: "Î = 0.45·r + 0.25·v + 0.30·f",
+      mapping: "I-hat = 0.45*r + 0.25*v + 0.30*f",
       value: onlineLife,
-      signals: `tweet_count=${tweets}; following=${following}; ~posts/day=${postsPerDay.toFixed(2)}`,
+      signals: `tweets=${tweets}; following=${following}; ~posts/day=${postsPerDay.toFixed(2)}`,
     },
     {
       field: "identityContent",
       modelSymbol: "C",
-      mapping: "bio keywords + post volume (no post NLP)",
+      mapping: "bio keywords + post volume + media/post ratio",
       value: identityContent,
-      signals: `bio_keyword_hits=${keywordHits}; tweet_count=${tweets}`,
+      signals: `bio_hits=${keywordHits}; media=${media}; tweets=${tweets}`,
     },
     {
       field: "marketPressure",
@@ -144,59 +154,143 @@ function estimateFromMetrics(
       modelSymbol: "R",
       mapping: "likes/day + bio heat + post rate",
       value: affectLoad,
-      signals: `like_count=${likes}; bio_heat=${heat}; posts/day=${postsPerDay.toFixed(2)}`,
+      signals: `likes=${likes}; bio_heat=${heat}; posts/day=${postsPerDay.toFixed(2)}`,
     },
   ];
 
-  return { handle, avatar, name, bio, estimated, traces };
+  return {
+    handle,
+    avatar: m.avatar?.replace("_normal", "_400x400"),
+    name: m.name,
+    bio,
+    estimated,
+    traces,
+  };
 }
 
-async function lookupX(handle: string, token: string): Promise<Profile | { error: string }> {
-  const url = new URL(`https://api.twitter.com/2/users/by/username/${handle}`);
-  url.searchParams.set(
-    "user.fields",
-    "public_metrics,description,profile_image_url,name,created_at",
-  );
-  const res = await fetch(url.toString(), {
+async function fetchJson(url: string): Promise<unknown> {
+  const res = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${token}`,
-      "User-Agent": "cel-index-cf/1.0",
+      "User-Agent": "cel-index-cf/1.1 (+https://cel.f00.sh)",
+      Accept: "application/json",
     },
   });
-  if (res.status === 404) return { error: `No X user @${handle}` };
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    return { error: `X API ${res.status}${text ? `: ${text.slice(0, 120)}` : ""}` };
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function fromFxTwitter(handle: string): Promise<Metrics | null> {
+  try {
+    const json = (await fetchJson(`https://api.fxtwitter.com/${handle}`)) as {
+      code?: number;
+      user?: {
+        screen_name?: string;
+        followers?: number;
+        following?: number;
+        tweets?: number;
+        likes?: number;
+        media_count?: number;
+        name?: string;
+        description?: string;
+        avatar_url?: string;
+        joined?: string;
+      };
+    };
+    if (json.code !== 200 || !json.user) return null;
+    const u = json.user;
+    return {
+      followers: u.followers ?? 0,
+      following: u.following ?? 0,
+      tweets: u.tweets ?? 0,
+      likes: u.likes ?? 0,
+      media: u.media_count ?? 0,
+      createdAt: u.joined,
+      name: u.name,
+      bio: u.description,
+      avatar: u.avatar_url,
+    };
+  } catch {
+    return null;
   }
-  const json = (await res.json()) as {
-    data?: {
-      username?: string;
+}
+
+async function fromVxTwitter(handle: string): Promise<Metrics | null> {
+  try {
+    const json = (await fetchJson(`https://api.vxtwitter.com/${handle}`)) as {
+      screen_name?: string;
+      followers_count?: number;
+      following_count?: number;
+      tweet_count?: number;
+      likes?: number;
+      media_count?: number;
       name?: string;
       description?: string;
       profile_image_url?: string;
       created_at?: string;
-      public_metrics?: {
-        followers_count?: number;
-        following_count?: number;
-        tweet_count?: number;
-        like_count?: number;
+    };
+    if (!json.screen_name && json.tweet_count == null) return null;
+    return {
+      followers: json.followers_count ?? 0,
+      following: json.following_count ?? 0,
+      tweets: json.tweet_count ?? 0,
+      likes: json.likes ?? 0,
+      media: json.media_count ?? 0,
+      createdAt: json.created_at,
+      name: json.name,
+      bio: json.description,
+      avatar: json.profile_image_url,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fromOfficialX(handle: string, token: string): Promise<Metrics | null> {
+  try {
+    const url = new URL(`https://api.twitter.com/2/users/by/username/${handle}`);
+    url.searchParams.set(
+      "user.fields",
+      "public_metrics,description,profile_image_url,name,created_at",
+    );
+    const res = await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "User-Agent": "cel-index-cf/1.1",
+      },
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      data?: {
+        username?: string;
+        name?: string;
+        description?: string;
+        profile_image_url?: string;
+        created_at?: string;
+        public_metrics?: {
+          followers_count?: number;
+          following_count?: number;
+          tweet_count?: number;
+          like_count?: number;
+        };
       };
     };
-    errors?: Array<{ detail?: string; title?: string }>;
-  };
-  if (!json.data) {
-    const msg = json.errors?.[0]?.detail || json.errors?.[0]?.title || "user not found";
-    return { error: msg };
+    const d = json.data;
+    if (!d) return null;
+    const pm = d.public_metrics || {};
+    return {
+      followers: pm.followers_count ?? 0,
+      following: pm.following_count ?? 0,
+      tweets: pm.tweet_count ?? 0,
+      likes: pm.like_count ?? 0,
+      media: 0,
+      createdAt: d.created_at,
+      name: d.name,
+      bio: d.description,
+      avatar: d.profile_image_url,
+    };
+  } catch {
+    return null;
   }
-  const d = json.data;
-  return estimateFromMetrics(
-    (d.username || handle).toLowerCase(),
-    d.public_metrics || {},
-    d.description || "",
-    d.profile_image_url?.replace("_normal", "_400x400"),
-    d.name,
-    d.created_at,
-  );
 }
 
 export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (ctx) => {
@@ -206,6 +300,7 @@ export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (
   } catch {
     return Response.json({ ok: false, error: "invalid JSON body" }, { status: 400 });
   }
+
   const handle = normalizeHandle(
     body && typeof body === "object" && body !== null && "handle" in body
       ? (body as { handle?: unknown }).handle
@@ -217,24 +312,30 @@ export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (
       { status: 200 },
     );
   }
-  const token = ctx.env.X_BEARER_TOKEN;
-  if (!token) {
-    return Response.json(
-      {
-        ok: false,
-        code: "not_configured",
-        error:
-          "X import is temporarily unavailable. Skip and set I, C, M, and R yourself — scoring is the same.",
-      },
-      { status: 200 },
-    );
-  }
+
   try {
-    const result = await lookupX(handle, token);
-    if ("error" in result) {
-      return Response.json({ ok: false, error: result.error }, { status: 200 });
+    // Prefer free public profile APIs; optional official token as extra path
+    let metrics =
+      (await fromFxTwitter(handle)) ||
+      (await fromVxTwitter(handle)) ||
+      null;
+
+    if (!metrics && ctx.env.X_BEARER_TOKEN) {
+      metrics = await fromOfficialX(handle, ctx.env.X_BEARER_TOKEN);
     }
-    return Response.json({ ok: true, profile: result }, { status: 200 });
+
+    if (!metrics) {
+      return Response.json(
+        {
+          ok: false,
+          error: `Could not load @${handle}. Check the handle or skip import.`,
+        },
+        { status: 200 },
+      );
+    }
+
+    const profile = estimate(handle, metrics);
+    return Response.json({ ok: true, profile }, { status: 200 });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "lookup failed";
     return Response.json(
