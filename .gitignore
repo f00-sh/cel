@@ -1,7 +1,7 @@
 node_modules/
-.wrangler/
 dist/
-.DS_Store
+.wrangler/
 *.log
 .env
 .env.*
+.DS_Store

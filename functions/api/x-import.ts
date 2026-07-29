@@ -1,10 +1,7 @@
 /**
- * TanStack Start serverFn shim for Cel Index X-profile import.
- * Client calls: POST /_serverFn/<hash> with header x-tsr-serverFn: true
- * Body: { "data": { "handle": "username" } }
- *
- * Optional secret: X_BEARER_TOKEN (X API v2) for real public_metrics.
- * Without it, returns ok:false so the survey continues without prefill.
+ * Optional X profile prefill for Cel Index.
+ * POST /api/x-import  { "handle": "username" }
+ * Secret: X_BEARER_TOKEN (X API v2)
  */
 
 type Estimated = {
@@ -14,10 +11,13 @@ type Estimated = {
   affectLoad: number;
 };
 
+type PrefillField = keyof Estimated;
+
 type Trace = {
-  field: keyof Estimated;
+  field: PrefillField;
   modelSymbol: string;
-  signals: string[];
+  mapping: string;
+  signals: string;
   value: number;
 };
 
@@ -52,25 +52,33 @@ function estimateFromMetrics(
     followers_count?: number;
     following_count?: number;
     tweet_count?: number;
-    listed_count?: number;
+    like_count?: number;
   },
   bio: string,
   avatar?: string,
-  name?: string
+  name?: string,
+  createdAt?: string,
 ): Profile {
   const followers = metrics.followers_count ?? 0;
   const following = metrics.following_count ?? 0;
   const tweets = metrics.tweet_count ?? 0;
+  const likes = metrics.like_count ?? 0;
 
-  // Rough activity proxies (public aggregates only; no timeline NLP).
-  const postsPerDay = tweets > 0 ? tweets / (365 * 3) : 0; // assume ~3y account without created_at
-  const r = log01(postsPerDay * 30, 120); // monthly-ish
+  let accountDays = 365 * 3;
+  if (createdAt) {
+    const ms = Date.now() - Date.parse(createdAt);
+    if (Number.isFinite(ms) && ms > 0) accountDays = Math.max(30, ms / 86400000);
+  }
+  const postsPerDay = tweets / accountDays;
+  const likesPerDay = likes / accountDays;
+
+  const r = log01(postsPerDay * 30, 120);
   const v = log01(tweets, 50_000);
   const f = log01(following, 5_000);
   const onlineLife = clamp01(0.45 * r + 0.25 * v + 0.3 * f);
 
   const bioL = bio.toLowerCase();
-  const keywordHits = [
+  const keywords = [
     "lonely",
     "alone",
     "femcel",
@@ -81,21 +89,26 @@ function estimateFromMetrics(
     "forever alone",
     "no bf",
     "no gf",
-  ].filter((k) => bioL.includes(k)).length;
+  ];
+  const keywordHits = keywords.filter((k) => bioL.includes(k)).length;
+  // media/post ratio unavailable without media_count field; volume proxy only
   const identityContent = clamp01(
-    0.35 * Math.min(1, keywordHits / 3) + 0.4 * v + 0.25 * log01(tweets / Math.max(1, following), 50)
+    0.35 * Math.min(1, keywordHits / 3) +
+      0.4 * v +
+      0.25 * log01(tweets / Math.max(1, following), 50),
   );
 
   const followAsym =
     followers + following === 0
       ? 0.5
       : following / Math.max(1, followers + following);
-  const marketPressure = clamp01(
-    0.55 * log01(followers, 100_000) + 0.45 * followAsym
-  );
+  const marketPressure = clamp01(0.55 * log01(followers, 100_000) + 0.45 * followAsym);
 
-  // Without engagement/timeline, keep affect modest and transparent.
-  const affectLoad = clamp01(0.35 * onlineLife + 0.25 * identityContent + 0.4 * 0.45);
+  const heat =
+    (bioL.match(/hate|rage|angry|despair|depressed|kill|worthless/g) || []).length;
+  const affectLoad = clamp01(
+    0.4 * log01(likesPerDay * 30, 500) + 0.25 * Math.min(1, heat / 2) + 0.35 * r,
+  );
 
   const estimated: Estimated = {
     onlineLife,
@@ -108,52 +121,41 @@ function estimateFromMetrics(
     {
       field: "onlineLife",
       modelSymbol: "I",
+      mapping: "Î = 0.45·r + 0.25·v + 0.30·f",
       value: onlineLife,
-      signals: [
-        `tweet_count=${tweets}`,
-        `following=${following}`,
-        "proxy posts/day from lifetime volume",
-      ],
+      signals: `tweet_count=${tweets}; following=${following}; ~posts/day=${postsPerDay.toFixed(2)}`,
     },
     {
       field: "identityContent",
       modelSymbol: "C",
+      mapping: "bio keywords + post volume (no post NLP)",
       value: identityContent,
-      signals: [
-        `bio_keyword_hits=${keywordHits}`,
-        `tweet_count=${tweets}`,
-        "no post NLP — bio + volume only",
-      ],
+      signals: `bio_keyword_hits=${keywordHits}; tweet_count=${tweets}`,
     },
     {
       field: "marketPressure",
       modelSymbol: "M",
+      mapping: "followers + following/follower asymmetry",
       value: marketPressure,
-      signals: [`followers=${followers}`, `following=${following}`],
+      signals: `followers=${followers}; following=${following}`,
     },
     {
       field: "affectLoad",
       modelSymbol: "R",
+      mapping: "likes/day + bio heat + post rate",
       value: affectLoad,
-      signals: ["coarse proxy from I/C (no timeline)"],
+      signals: `like_count=${likes}; bio_heat=${heat}; posts/day=${postsPerDay.toFixed(2)}`,
     },
   ];
 
-  return {
-    handle,
-    avatar,
-    name,
-    bio,
-    estimated,
-    traces,
-  };
+  return { handle, avatar, name, bio, estimated, traces };
 }
 
 async function lookupX(handle: string, token: string): Promise<Profile | { error: string }> {
   const url = new URL(`https://api.twitter.com/2/users/by/username/${handle}`);
   url.searchParams.set(
     "user.fields",
-    "public_metrics,description,profile_image_url,name"
+    "public_metrics,description,profile_image_url,name,created_at",
   );
   const res = await fetch(url.toString(), {
     headers: {
@@ -172,11 +174,12 @@ async function lookupX(handle: string, token: string): Promise<Profile | { error
       name?: string;
       description?: string;
       profile_image_url?: string;
+      created_at?: string;
       public_metrics?: {
         followers_count?: number;
         following_count?: number;
         tweet_count?: number;
-        listed_count?: number;
+        like_count?: number;
       };
     };
     errors?: Array<{ detail?: string; title?: string }>;
@@ -191,42 +194,29 @@ async function lookupX(handle: string, token: string): Promise<Profile | { error
     d.public_metrics || {},
     d.description || "",
     d.profile_image_url?.replace("_normal", "_400x400"),
-    d.name
+    d.name,
+    d.created_at,
   );
 }
 
 export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (ctx) => {
-  const id = ctx.params.id;
-  // Only the known TanStack serverFn id from the current client build
-  const KNOWN =
-    "5914f6941cfd14f7c7e70f5ab42d8d44a36ec77e5cd8c7eac2844649e5f0d137";
-  if (id !== KNOWN) {
-    return Response.json(
-      { ok: false, error: "unknown server function" },
-      { status: 404 }
-    );
-  }
-
   let body: unknown = null;
   try {
     body = await ctx.request.json();
   } catch {
     return Response.json({ ok: false, error: "invalid JSON body" }, { status: 400 });
   }
-
-  const data =
-    body && typeof body === "object" && body !== null && "data" in body
-      ? (body as { data?: { handle?: unknown } }).data
-      : (body as { handle?: unknown } | null);
-
-  const handle = normalizeHandle(data?.handle);
+  const handle = normalizeHandle(
+    body && typeof body === "object" && body !== null && "handle" in body
+      ? (body as { handle?: unknown }).handle
+      : null,
+  );
   if (!handle) {
     return Response.json(
       { ok: false, error: "Enter a valid X handle (1–15 letters, numbers, _)." },
-      { status: 200 }
+      { status: 200 },
     );
   }
-
   const token = ctx.env.X_BEARER_TOKEN;
   if (!token) {
     return Response.json(
@@ -235,10 +225,9 @@ export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (
         error:
           "X import is not configured on this edge (missing X_BEARER_TOKEN). Continue without import.",
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
-
   try {
     const result = await lookupX(handle, token);
     if ("error" in result) {
@@ -249,7 +238,7 @@ export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (
     const msg = e instanceof Error ? e.message : "lookup failed";
     return Response.json(
       { ok: false, error: `Lookup failed. Continue without import. (${msg})` },
-      { status: 200 }
+      { status: 200 },
     );
   }
 };

@@ -4,8 +4,12 @@ on:
   push:
     branches: [main]
     paths:
-      - "site/**"
+      - "src/**"
+      - "public/**"
       - "functions/**"
+      - "index.html"
+      - "package.json"
+      - "vite.config.ts"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -21,10 +25,15 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Deploy static assets from site/; Pages Functions from ./functions
-          command: pages deploy site --project-name=f00-cel --branch=main
+          command: pages deploy dist --project-name=f00-cel --branch=main

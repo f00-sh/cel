@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/ui.tsx","./src/lib/model.ts","./src/lib/scorecard.ts","./src/lib/x-import.ts","./src/pages/Assessment.tsx","./src/pages/Methodology.tsx"],"errors":true,"version":"5.8.3"}
