@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import {
   DEFAULT_SURVEY,
+  HYPER,
+  SITE_URL,
   STEPS,
   type PathId,
   type StepId,
@@ -21,9 +23,12 @@ import {
   pathLabels,
   shareCaption,
   toModelInputs,
-  HYPER,
 } from "@/lib/model";
-import { downloadScorecard } from "@/lib/scorecard";
+import {
+  copyImageToClipboard,
+  downloadScorecard,
+  scorecardBlob,
+} from "@/lib/scorecard";
 import {
   importXProfile,
   type PrefillField,
@@ -130,23 +135,40 @@ export function AssessmentPage() {
     });
   }
 
-  async function shareCard(openComposer: boolean) {
+  function scorecardInput() {
+    return {
+      path: survey.path,
+      handle: survey.handle,
+      score,
+      F: breakdown.F,
+      tau: HYPER.tau,
+      tierTitle: tier.title,
+      highest: extremes.highest.label,
+      lowest: extremes.lowest.label,
+      breakdown,
+    };
+  }
+
+  async function downloadPng() {
     setSharing(true);
     setShareNote(null);
     try {
-      const blob = await downloadScorecard({
-        path: survey.path,
-        handle: survey.handle,
-        score,
-        F: breakdown.F,
-        tau: HYPER.tau,
-        tierTitle: tier.title,
-        highest: extremes.highest.label,
-        lowest: extremes.lowest.label,
-        breakdown,
-      });
+      await downloadScorecard(scorecardInput());
+      setShareNote("Score card saved.");
+    } catch {
+      setShareNote("Could not save the image.");
+    } finally {
+      setSharing(false);
+    }
+  }
+
+  /** Share to X: no save dialog. Prefer OS share sheet with image; else clipboard + intent. */
+  async function shareToX() {
+    setSharing(true);
+    setShareNote(null);
+    try {
       const text = caption();
-      await navigator.clipboard.writeText(text).catch(() => undefined);
+      const blob = await scorecardBlob(scorecardInput());
       const file = new File([blob], `cel-index-${score.toFixed(1)}.png`, {
         type: "image/png",
       });
@@ -154,27 +176,77 @@ export function AssessmentPage() {
         canShare?: (data: ShareData) => boolean;
         share?: (data: ShareData) => Promise<void>;
       };
-      if (!openComposer && nav.share && nav.canShare?.({ files: [file], text })) {
+
+      // 1) Native share sheet with image + text (mobile / some desktops)
+      const shareData: ShareData = {
+        files: [file],
+        text,
+        title: labels.full,
+        url: SITE_URL,
+      };
+      if (nav.share && nav.canShare?.(shareData)) {
+        await nav.share(shareData);
+        setShareNote("Opened system share — pick X.");
+        return;
+      }
+      // Some browsers canShare files but not with url together
+      if (nav.share && nav.canShare?.({ files: [file], text })) {
         await nav.share({ files: [file], text, title: labels.full });
-        setShareNote("Shared via system sheet.");
-      } else if (openComposer) {
-        setShareNote(
-          "Score card image downloaded and caption copied. Attach the PNG when the composer opens.",
-        );
-        window.setTimeout(() => {
-          window.open(
-            `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`,
-            "_blank",
-            "noopener,noreferrer",
-          );
-        }, 350);
+        setShareNote("Opened system share — pick X.");
+        return;
+      }
+
+      // 2) Copy image + text, open X compose with caption (includes site link)
+      const imgOk = await copyImageToClipboard(blob);
+      await navigator.clipboard.writeText(text).catch(() => undefined);
+      // Re-write image after text if possible (clipboard is one payload; prefer image+text together)
+      if (imgOk) {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "image/png": blob,
+              "text/plain": new Blob([text], { type: "text/plain" }),
+            }),
+          ]);
+        } catch {
+          // image-only already attempted; text is in intent URL
+        }
+      }
+
+      const intent = `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
+      window.open(intent, "_blank", "noopener,noreferrer");
+
+      if (imgOk) {
+        setShareNote("Composer opened with caption + site link. Paste (Ctrl/Cmd+V) to drop the score card image.");
       } else {
-        setShareNote("Score card PNG downloaded. Caption copied to clipboard.");
+        setShareNote(
+          "Composer opened with caption + site link. Use Download PNG if you want the image file.",
+        );
       }
     } catch {
-      setShareNote("Could not generate the image. Caption can still be copied.");
+      try {
+        const text = caption();
+        await navigator.clipboard.writeText(text);
+        window.open(
+          `https://x.com/intent/post?text=${encodeURIComponent(text)}`,
+          "_blank",
+          "noopener,noreferrer",
+        );
+        setShareNote("Composer opened with caption + site link.");
+      } catch {
+        setShareNote("Could not open share. Copy caption and use Download PNG.");
+      }
     } finally {
       setSharing(false);
+    }
+  }
+
+  async function copyCaptionOnly() {
+    try {
+      await navigator.clipboard.writeText(caption());
+      setShareNote("Caption copied (includes cel.f00.sh).");
+    } catch {
+      setShareNote("Could not copy caption.");
     }
   }
 
@@ -627,7 +699,16 @@ export function AssessmentPage() {
                 <button
                   type="button"
                   disabled={sharing}
-                  onClick={() => void shareCard(false)}
+                  onClick={() => void shareToX()}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-fg/25 bg-fg px-3 text-sm font-semibold text-bg transition-opacity hover:opacity-92 disabled:opacity-40 sm:col-span-2"
+                >
+                  <Share2 className="size-4" aria-hidden />
+                  {sharing ? "Opening…" : "Share to X"}
+                </button>
+                <button
+                  type="button"
+                  disabled={sharing}
+                  onClick={() => void downloadPng()}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong disabled:opacity-40"
                 >
                   <Download className="size-4" aria-hidden />
@@ -635,36 +716,24 @@ export function AssessmentPage() {
                 </button>
                 <button
                   type="button"
-                  disabled={sharing}
-                  onClick={() => void shareCard(true)}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong disabled:opacity-40"
-                >
-                  <Share2 className="size-4" aria-hidden />
-                  Share to X
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(caption()).then(
-                      () => setShareNote("Caption copied."),
-                      () => setShareNote("Could not copy caption."),
-                    );
-                  }}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong"
+                  onClick={() => void copyCaptionOnly()}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong sm:col-span-3"
                 >
                   <Copy className="size-4" aria-hidden />
-                  Caption
+                  Copy caption
                 </button>
               </div>
               {shareNote ? (
                 <p className="mt-3 text-xs text-muted" role="status">
                   {shareNote}
                 </p>
-              ) : null}
-              <p className="mt-3 text-xs leading-relaxed text-faint">
-                X’s web composer can’t auto-attach images. Download PNG, then attach it with the
-                caption.
-              </p>
+              ) : (
+                <p className="mt-3 text-xs leading-relaxed text-faint">
+                  Share to X opens the composer with your score +{" "}
+                  <span className="text-muted">cel.f00.sh</span>. On desktop, paste once to attach
+                  the score card image.
+                </p>
+              )}
             </div>
 
             <div className="mt-8 flex flex-wrap gap-3">

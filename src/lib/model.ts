@@ -179,6 +179,8 @@ export function factorExtremes(factors: Factor[]) {
   return { lowest: sorted[0]!, highest: sorted[sorted.length - 1]! };
 }
 
+export const SITE_URL = "https://cel.f00.sh";
+
 export function shareCaption(args: {
   path: PathId;
   handle: string | null;
@@ -198,7 +200,8 @@ max factor: ${args.highest}
 min factor: ${args.lowest}
 
 F = I · (D − S)₊ · B · σ(C) · ρ · Ψ
-methodology + assessment linked in profile / replies`;
+${SITE_URL}
+${SITE_URL}/methodology`;
 }
 
 export type StepId =
