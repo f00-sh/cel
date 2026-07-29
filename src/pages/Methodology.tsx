@@ -25,29 +25,31 @@ export function MethodologyPage() {
   const { k, C0, tau } = HYPER;
   return (
     <div className="poster-bg poster-grain relative min-h-dvh">
-      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
-        <Link
-          to="/"
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-fg"
-        >
-          <ArrowLeft className="size-4" aria-hidden />
-          Back to assessment
-        </Link>
-        <header className="mt-8">
-          <p className="font-mono text-[0.7rem] tracking-[0.28em] text-muted uppercase">
-            Specification · v1
-          </p>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
+      <div className="shell-inner mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <Link
+            to="/"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border hover:bg-surface hover:text-fg"
+          >
+            <ArrowLeft className="size-3.5" aria-hidden />
+            Assessment
+          </Link>
+          <span className="font-mono text-[0.65rem] tracking-[0.2em] text-faint uppercase">
+            Spec · v1
+          </span>
+        </div>
+        <header className="step-panel">
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
             Methodology
           </h1>
-          <p className="mt-3 text-base leading-relaxed text-muted">
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
             Formal definition of the index, the product decomposition, classification rule, survey
             instruments, and the limited X-profile estimator. Self-report model — not a clinical
             instrument.
           </p>
         </header>
 
-        <div className="mt-10 space-y-10 text-sm leading-relaxed text-muted sm:text-base">
+        <div className="step-panel mt-10 space-y-10 text-sm leading-relaxed text-muted sm:text-base">
           <Section n="1" title="Object of measurement">
             <p>
               Let an individual report latent constructs related to partnership desire, realized
@@ -60,9 +62,9 @@ export function MethodologyPage() {
           </Section>
 
           <Section n="2" title="Variables">
-            <div className="overflow-x-auto rounded-lg border border-border">
+            <div className="panel overflow-x-auto">
               <table className="w-full min-w-[28rem] text-left text-sm">
-                <thead className="border-b border-border bg-surface text-faint">
+                <thead className="border-b border-border bg-surface-2/50 text-faint">
                   <tr>
                     <th className="px-3 py-2 font-mono font-medium">Sym</th>
                     <th className="px-3 py-2 font-medium">Construct</th>
@@ -95,7 +97,7 @@ export function MethodologyPage() {
           </Section>
 
           <Section n="3" title="Product model">
-            <div className="rounded-lg border border-border bg-surface px-4 py-4 font-mono text-sm text-fg sm:text-base">
+            <div className="panel math-mono px-4 py-4 text-sm text-fg sm:text-base">
               <p>F = I · (D − S)₊ · B · σ(k(C − C₀)) · ρ(L, P, M) · Ψ(R)</p>
               <p className="mt-3 text-muted">where</p>
               <p className="mt-2 text-fg/90">(x)₊ = max(0, x)</p>
@@ -115,7 +117,7 @@ export function MethodologyPage() {
           </Section>
 
           <Section n="4" title="Classification & display score">
-            <div className="rounded-lg border border-border bg-surface px-4 py-4 font-mono text-sm text-fg">
+            <div className="panel math-mono px-4 py-4 text-sm text-fg">
               <p>label_positive ⟺ F &gt; τ</p>
               <p className="mt-2">S_display = 100 · F ∈ [0, 100]</p>
             </div>
@@ -194,7 +196,7 @@ export function MethodologyPage() {
           </Section>
 
           <Section n="8" title="Reference form">
-            <div className="rounded-lg border border-dashed border-border-strong px-4 py-4 font-mono text-sm text-accent-soft">
+            <div className="panel math-mono border-dashed px-4 py-4 text-sm text-accent-soft">
               <p>F = I · (D − S)₊ · B · σ(k(C − C₀)) · ρ(L,P,M) · Ψ(R)</p>
               <p className="mt-1">positive ⟺ F &gt; τ</p>
               <p className="mt-1">S_display = 100 · F</p>
@@ -205,7 +207,7 @@ export function MethodologyPage() {
         <div className="mt-12 border-t border-border pt-8">
           <Link
             to="/"
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-fg px-6 text-sm font-semibold text-bg transition-opacity hover:opacity-90"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-fg px-6 text-sm font-semibold text-bg transition-opacity hover:opacity-92"
           >
             Take the assessment
           </Link>
