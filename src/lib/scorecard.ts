@@ -53,26 +53,26 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
 
   const labels = pathLabels(input.path);
   ctx.fillStyle = "#71717a";
-  ctx.font = "500 22px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "500 22px ui-monospace, monospace";
   ctx.fillText("CEL INDEX  ·  PRODUCT MODEL", 64, 80);
   ctx.fillStyle = "#f4f4f5";
-  ctx.font = "600 42px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "600 42px ui-monospace, monospace";
   ctx.fillText(labels.full, 64, 140);
   if (input.handle) {
     ctx.fillStyle = "#a1a1aa";
-    ctx.font = "500 24px Onyx, 'Times New Roman', Times, serif";
+    ctx.font = "500 24px ui-monospace, monospace";
     ctx.fillText(`@${input.handle.replace(/^@/, "")}`, 64, 178);
   }
   ctx.fillStyle = "#f4f4f5";
-  ctx.font = "600 140px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "600 140px ui-monospace, monospace";
   const score = input.score.toFixed(1);
   ctx.fillText(score, 64, 340);
   const sw = ctx.measureText(score).width;
   ctx.fillStyle = "#71717a";
-  ctx.font = "500 42px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "500 42px ui-monospace, monospace";
   ctx.fillText("/ 100", 64 + sw + 16, 340);
   ctx.fillStyle = "#e4e4e7";
-  ctx.font = "600 36px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "600 36px ui-monospace, monospace";
   ctx.fillText(input.tierTitle, 64, 400);
 
   ctx.fillStyle = "#18181b";
@@ -83,10 +83,10 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
   roundRect(ctx, 64, 440, w - 128, 72, 12);
   ctx.stroke();
   ctx.fillStyle = "#d4d4d8";
-  ctx.font = "500 26px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "500 26px ui-monospace, monospace";
   ctx.fillText("F = I · (D − S)₊ · B · σ(C) · ρ · Ψ", 88, 486);
   ctx.fillStyle = "#a1a1aa";
-  ctx.font = "400 20px Kurt, 'Segoe Print', cursive";
+  ctx.font = "400 20px ui-monospace, monospace";
   ctx.fillText(
     `F = ${input.F.toFixed(4)}   τ = ${input.tau.toFixed(2)}   max: ${input.highest}   min: ${input.lowest}`,
     64,
@@ -105,12 +105,12 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
     roundRect(ctx, x, 590, fill, 28, 6);
     ctx.fill();
     ctx.fillStyle = "#71717a";
-    ctx.font = "500 14px Kurt, 'Segoe Print', cursive";
+    ctx.font = "500 14px ui-monospace, monospace";
     ctx.fillText(f.key, x + 8, 609);
   });
 
   ctx.fillStyle = "#52525b";
-  ctx.font = "400 16px Kurt, 'Segoe Print', cursive";
+  ctx.font = "400 16px ui-monospace, monospace";
   ctx.fillText("self-report · formal product · not a diagnosis", 64, 648);
   return canvas;
 }

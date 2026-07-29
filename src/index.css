@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* Brand tokens from https://f00.sh/theme/f00-theme.css */
+/* Brand: f00-theme-11 — Onyx brand · zine body · chip headers */
 @theme {
-  --font-display: var(--f00-font-chip, var(--f00-font-mono));
-  --font-sans: var(--f00-font-zine, var(--f00-font-body));
-  --font-mono: var(--f00-font-chip, var(--f00-font-mono));
+  --font-display: var(--f00-font-chip, ui-monospace, monospace);
+  --font-sans: var(--f00-font-zine, ui-monospace, monospace);
+  --font-mono: var(--f00-font-chip, ui-monospace, monospace);
   --color-fg: var(--f00-fg);
   --color-bg: var(--f00-bg);
   --color-muted: var(--f00-muted);
