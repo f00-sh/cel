@@ -86,7 +86,7 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
   ctx.font = "500 26px Onyx, 'Times New Roman', Times, serif";
   ctx.fillText("F = I · (D − S)₊ · B · σ(C) · ρ · Ψ", 88, 486);
   ctx.fillStyle = "#a1a1aa";
-  ctx.font = "400 20px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "400 20px Kurt, 'Segoe Print', cursive";
   ctx.fillText(
     `F = ${input.F.toFixed(4)}   τ = ${input.tau.toFixed(2)}   max: ${input.highest}   min: ${input.lowest}`,
     64,
@@ -105,12 +105,12 @@ export function drawScorecard(input: ScorecardInput): HTMLCanvasElement {
     roundRect(ctx, x, 590, fill, 28, 6);
     ctx.fill();
     ctx.fillStyle = "#71717a";
-    ctx.font = "500 14px Onyx, 'Times New Roman', Times, serif";
+    ctx.font = "500 14px Kurt, 'Segoe Print', cursive";
     ctx.fillText(f.key, x + 8, 609);
   });
 
   ctx.fillStyle = "#52525b";
-  ctx.font = "400 16px Onyx, 'Times New Roman', Times, serif";
+  ctx.font = "400 16px Kurt, 'Segoe Print', cursive";
   ctx.fillText("self-report · formal product · not a diagnosis", 64, 648);
   return canvas;
 }
