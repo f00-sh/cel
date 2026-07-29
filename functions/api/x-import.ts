@@ -222,8 +222,9 @@ export const onRequestPost: PagesFunction<{ X_BEARER_TOKEN?: string }> = async (
     return Response.json(
       {
         ok: false,
+        code: "not_configured",
         error:
-          "X import is not configured on this edge (missing X_BEARER_TOKEN). Continue without import.",
+          "X import is temporarily unavailable. Skip and set I, C, M, and R yourself — scoring is the same.",
       },
       { status: 200 },
     );

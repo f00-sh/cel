@@ -24,7 +24,7 @@ export type XProfile = {
 
 export type XImportResult =
   | { ok: true; profile: XProfile }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code?: string };
 
 export async function importXProfile(handle: string): Promise<XImportResult> {
   const res = await fetch("/api/x-import", {

@@ -296,7 +296,10 @@ export function AssessmentPage() {
               </button>
             </div>
             {lookupError ? (
-              <p className="mt-3 text-sm text-accent-soft" role="alert">
+              <p
+                className="panel-soft mt-3 px-3 py-2.5 text-sm leading-relaxed text-muted"
+                role="alert"
+              >
                 {lookupError}
               </p>
             ) : null}
