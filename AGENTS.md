@@ -22,4 +22,4 @@ Product-only. No agent/process/DNS chatter on the site.
 
 ## Theme
 
-Brand tokens/fonts from hub only: `https://f00.sh/theme/f00-theme.css` (white on black, Onyx). Do not redefine brand colors/fonts locally.
+Brand tokens/fonts from hub only: `https://f00.sh/theme/f00-theme-13.css` (Heartbox palette, Onyx). Do not redefine brand colors/fonts locally. Source: heartbox.f00.sh.
