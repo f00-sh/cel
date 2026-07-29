@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Brand: f00-theme-13 Heartbox — Onyx brand · zine body · chip headers */
+/* Brand: f00-theme-14 Heartbox — Onyx brand · zine body · chip headers */
 @theme {
   --font-display: var(--f00-font-chip, ui-monospace, monospace);
   --font-sans: var(--f00-font-zine, ui-monospace, monospace);
@@ -94,12 +94,12 @@ body {
 }
 
 .range:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-fg) 25%, transparent);
+  box-shadow: none;
 }
 
 .range::-webkit-slider-runnable-track {
   height: 0.4rem;
-  border-radius: 999px;
+  border-radius: 0;
   background: linear-gradient(
     to right,
     var(--color-fg) 0%,
@@ -115,7 +115,7 @@ body {
   margin-top: -0.45rem;
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 999px;
+  border-radius: 0;
   border: 2px solid var(--color-bg);
   background: var(--color-fg);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
@@ -128,13 +128,13 @@ body {
 
 .range::-moz-range-track {
   height: 0.4rem;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--color-surface-2);
 }
 
 .range::-moz-range-progress {
   height: 0.4rem;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--color-fg);
 }
 
@@ -142,7 +142,7 @@ body {
   width: 1.25rem;
   height: 1.25rem;
   border: 2px solid var(--color-bg);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--color-fg);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
@@ -183,7 +183,7 @@ body {
   margin-top: 2.5rem;
   padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom));
   background: linear-gradient(to top, var(--color-bg) 55%, transparent);
-  backdrop-filter: blur(8px);
+  backdrop-filter: none;
   z-index: 5;
 }
 
@@ -200,11 +200,11 @@ body {
 .panel {
   border: 1px solid var(--color-border);
   background: color-mix(in oklab, var(--color-surface) 88%, transparent);
-  border-radius: 1rem;
+  border-radius: 0;
 }
 
 .panel-soft {
   border: 1px solid var(--color-border);
   background: color-mix(in oklab, var(--color-surface-2) 55%, transparent);
-  border-radius: 0.75rem;
+  border-radius: 0;
 }
