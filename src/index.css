@@ -1,3 +1,4 @@
+/* Layout only. Brand shell: https://f00.sh/theme/f00-theme.css (sky / white boxes / poppy). */
 @import "tailwindcss";
 
 /* Brand: f00-theme.css Heartbox — Onyx brand · zine body · chip headers */
@@ -207,4 +208,21 @@ body {
   border: 1px solid var(--color-border);
   background: color-mix(in oklab, var(--color-surface-2) 55%, transparent);
   border-radius: 0;
+}
+
+
+/* ── f00 website shell wins: sky field, white cards, poppy text ── */
+html, body, #root {
+  background: transparent !important;
+  min-height: 100dvh;
+}
+body {
+  color: #ffffff !important;
+}
+/* common app surfaces → white boxes with poppy text */
+.card, .panel, [class*="card"], [class*="panel"], [class*="surface"] {
+  background: #ffffff !important;
+  color: #C50A1B !important;
+  border-radius: 0 !important;
+  border-color: #ffffff !important;
 }
