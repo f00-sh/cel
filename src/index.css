@@ -227,3 +227,38 @@ body {
 /* cel shared shell — cards use poppy panels from f00-theme */
 .poster-grain::before { display: none !important; }
 #root { background: transparent !important; }
+
+
+/* cel-v30-shell — obey f00 sky + poppy cards */
+html, body, #root {
+  background: transparent !important;
+  min-height: 100%;
+}
+.poster-bg, .poster-grain {
+  background: transparent !important;
+}
+.poster-grain::before { display: none !important; }
+/* main assessment stack as poppy card surface */
+.shell-inner > section,
+.shell-inner > div > section,
+main section {
+  /* children use explicit panels */
+}
+/* light mist cards -> poppy card look via utility override */
+.bg-white, .bg-surface, [class*="bg-white"], [class*="bg-zinc"], [class*="bg-neutral"] {
+  background-color: #c50a1b !important;
+  color: #090909 !important;
+  border-radius: 0 !important;
+  border: 1px solid #c8ced4 !important;
+}
+.text-muted, .text-zinc-500, .text-neutral-500 {
+  color: rgba(9, 9, 9, 0.72) !important;
+}
+/* headings cream on poppy */
+h1, h2, h3 {
+  color: #ede6de !important;
+}
+/* keep buttons readable */
+button, .btn, a[class*="rounded"] {
+  border-radius: 0 !important;
+}
