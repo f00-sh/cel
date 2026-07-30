@@ -209,31 +209,31 @@ body {
 }
 
 
-/* ── f00 website shell wins: sky field, white cards, poppy text ── */
+/* ── f00 website shell wins: dye sky, hospital cream cards, poppy text ── */
 html, body, #root {
   background-color: transparent !important;
   background-image: none !important; /* local only — do not use on body */
   min-height: 100dvh;
 }
 body {
-  color: #ffffff !important;
+  color: #D0D5DB !important;
 }
-/* common app surfaces → white boxes with poppy text */
+/* common app surfaces → hospital cream + poppy type (never pure white) */
 .card, .panel, [class*="card"], [class*="panel"], [class*="surface"] {
-  background: #ffffff !important;
-  color: #C50A1B !important;
+  background: #E8DFD4 !important;
+  color: #B82E18 !important;
   border-radius: 0 !important;
-  border-color: #ffffff !important;
+  border-color: #B8BEC2 !important;
 }
 
 
-/* cel shared shell — cards use poppy panels from f00-theme */
+/* cel shared shell — cards use cream panels from f00-theme */
 .poster-grain::before { display: none !important; }
 #root { background-color: transparent !important;
   background-image: none !important; /* local only — do not use on body */ }
 
 
-/* cel-v30-shell — obey f00 sky + poppy cards */
+/* cel-v32-shell — obey f00 dye sky + hospital cream cards */
 html, #root {
   background-color: transparent !important;
   min-height: 100%;
@@ -247,17 +247,17 @@ body {
   background-image: none !important;
 }
 .poster-grain::before { display: none !important; }
-/* white SPA cards -> poppy cards */
+/* SPA light surfaces → hospital cream paper */
 .bg-white, .bg-surface,
 [class*="bg-white"],
 [class*="bg-zinc-"],
 [class*="bg-neutral-"],
 [class*="bg-stone-"],
 [class*="bg-gray-"] {
-  background-color: #c50a1b !important;
-  color: #090909 !important;
+  background-color: #E8DFD4 !important;
+  color: #B82E18 !important;
   border-radius: 0 !important;
-  border: 1px solid #c8ced4 !important;
+  border: 2px solid #B8BEC2 !important;
 }
 /* white page column wrappers often use max-w + white */
 .shell-inner > div,
@@ -265,13 +265,13 @@ body {
   /* leave layout */
 }
 .text-muted, .text-zinc-500, .text-neutral-500, .text-zinc-400 {
-  color: rgba(9, 9, 9, 0.75) !important;
+  color: rgba(138, 30, 16, 0.75) !important;
 }
 .text-white, .text-zinc-50, .text-neutral-50 {
-  color: #e8ecf0 !important;
+  color: #D0D5DB !important;
 }
 h1, h2, h3 {
-  color: #ede6de !important;
+  color: #D0D5DB !important;
   font-family: var(--f00-font-brand, "Onyx", serif) !important;
 }
 button, .btn, a[class*="rounded"] {
