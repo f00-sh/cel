@@ -221,7 +221,7 @@ body {
 /* common app surfaces → hospital cream + poppy type (never pure white) */
 .card, .panel, [class*="card"], [class*="panel"], [class*="surface"] {
   background: #E8DFD4 !important;
-  color: #B82E18 !important;
+  color: #D44A18 !important;
   border-radius: 0 !important;
   border-color: #B8BEC2 !important;
 }
@@ -255,7 +255,7 @@ body {
 [class*="bg-stone-"],
 [class*="bg-gray-"] {
   background-color: #E8DFD4 !important;
-  color: #B82E18 !important;
+  color: #D44A18 !important;
   border-radius: 0 !important;
   border: 2px solid #B8BEC2 !important;
 }
