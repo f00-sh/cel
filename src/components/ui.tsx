@@ -16,7 +16,7 @@ export function Shell({
         <header className="mb-6 flex items-center justify-between gap-3">
           <a
             href="https://f00.sh/"
-            className="brand group inline-flex items-baseline gap-1.5 font-mono text-[0.7rem] tracking-[0.18em] text-white uppercase no-underline"
+            className="brand group inline-flex items-baseline gap-1.5 font-mono text-[0.7rem] tracking-[0.18em] uppercase no-underline"
             aria-label="f00 home"
           >
             <span className="brand-mark text-[1.15rem] normal-case tracking-[0.12em]">
@@ -27,7 +27,7 @@ export function Shell({
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="font-mono text-[0.65rem] tracking-[0.16em] text-white/85 uppercase no-underline hover:text-white"
+              className="font-mono text-[0.65rem] tracking-[0.16em] uppercase no-underline"
             >
               cel index
             </Link>
@@ -35,10 +35,10 @@ export function Shell({
           </div>
         </header>
         {children}
-        <footer className="foot mt-12 flex flex-wrap items-baseline justify-between gap-3 border-t border-white/70 pt-4 font-mono text-[0.72rem] tracking-[0.12em] text-white uppercase">
+        <footer className="foot mt-12 flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-[0.72rem] tracking-[0.12em] uppercase">
           <span className="opacity-90">© f00 · MIT · cel</span>
           <a
-            className="foot-stars text-white/90 no-underline hover:text-white"
+            className="foot-stars no-underline"
             href="https://github.com/f00-sh/cel"
             rel="noopener noreferrer"
             data-f00-stars
