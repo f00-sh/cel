@@ -29,7 +29,8 @@ body,
 
 body {
   margin: 0;
-  background: transparent !important;
+  /* do NOT set background shorthand — shared theme owns hero photo */
+  background-color: transparent; /* without !important so theme image can paint */
   color: inherit;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -56,7 +57,8 @@ body {
 }
 
 .poster-bg {
-  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important; /* local only — do not use on body */
 }
 
 .poster-grain::before {
@@ -209,7 +211,8 @@ body {
 
 /* ── f00 website shell wins: sky field, white cards, poppy text ── */
 html, body, #root {
-  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important; /* local only — do not use on body */
   min-height: 100dvh;
 }
 body {
@@ -226,39 +229,55 @@ body {
 
 /* cel shared shell — cards use poppy panels from f00-theme */
 .poster-grain::before { display: none !important; }
-#root { background: transparent !important; }
+#root { background-color: transparent !important;
+  background-image: none !important; /* local only — do not use on body */ }
 
 
 /* cel-v30-shell — obey f00 sky + poppy cards */
-html, body, #root {
-  background: transparent !important;
+html, #root {
+  background-color: transparent !important;
   min-height: 100%;
 }
+/* NEVER use background shorthand on body — kills theme hero image */
+body {
+  background-image: unset; /* allow theme */
+}
 .poster-bg, .poster-grain {
-  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 .poster-grain::before { display: none !important; }
-/* main assessment stack as poppy card surface */
-.shell-inner > section,
-.shell-inner > div > section,
-main section {
-  /* children use explicit panels */
-}
-/* light mist cards -> poppy card look via utility override */
-.bg-white, .bg-surface, [class*="bg-white"], [class*="bg-zinc"], [class*="bg-neutral"] {
+/* white SPA cards -> poppy cards */
+.bg-white, .bg-surface,
+[class*="bg-white"],
+[class*="bg-zinc-"],
+[class*="bg-neutral-"],
+[class*="bg-stone-"],
+[class*="bg-gray-"] {
   background-color: #c50a1b !important;
   color: #090909 !important;
   border-radius: 0 !important;
   border: 1px solid #c8ced4 !important;
 }
-.text-muted, .text-zinc-500, .text-neutral-500 {
-  color: rgba(9, 9, 9, 0.72) !important;
+/* white page column wrappers often use max-w + white */
+.shell-inner > div,
+.shell-inner section {
+  /* leave layout */
 }
-/* headings cream on poppy */
+.text-muted, .text-zinc-500, .text-neutral-500, .text-zinc-400 {
+  color: rgba(9, 9, 9, 0.75) !important;
+}
+.text-white, .text-zinc-50, .text-neutral-50 {
+  color: #e8ecf0 !important;
+}
 h1, h2, h3 {
   color: #ede6de !important;
+  font-family: var(--f00-font-brand, "Onyx", serif) !important;
 }
-/* keep buttons readable */
 button, .btn, a[class*="rounded"] {
   border-radius: 0 !important;
+}
+/* shell header/footer chrome silver on sky */
+header a, footer, footer a, .foot, .foot a {
+  color: #e8ecf0 !important;
 }
