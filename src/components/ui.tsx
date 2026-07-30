@@ -14,16 +14,39 @@ export function Shell({
     <div className="poster-bg poster-grain relative min-h-dvh">
       <div className="shell-inner mx-auto max-w-lg px-4 pb-10 pt-5 sm:max-w-xl sm:px-6 sm:pb-14 sm:pt-8 lg:max-w-2xl">
         <header className="mb-6 flex items-center justify-between gap-3">
-          <Link
-            to="/"
-            className="group inline-flex items-baseline gap-1.5 rounded-md font-mono text-[0.7rem] tracking-[0.22em] text-faint uppercase transition-colors hover:text-muted"
+          <a
+            href="https://f00.sh/"
+            className="brand group inline-flex items-baseline gap-1.5 font-mono text-[0.7rem] tracking-[0.18em] text-white uppercase no-underline"
+            aria-label="f00 home"
           >
-            <span className="text-fg/90 group-hover:text-fg">cel</span>
-            <span className="text-faint">index</span>
-          </Link>
-          <div className="flex items-center gap-3">{topRight}</div>
+            <span className="brand-mark text-[1.15rem] normal-case tracking-[0.12em]">
+              f00
+            </span>
+            <span className="brand-sub opacity-85">/cel</span>
+          </a>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="font-mono text-[0.65rem] tracking-[0.16em] text-white/85 uppercase no-underline hover:text-white"
+            >
+              cel index
+            </Link>
+            {topRight}
+          </div>
         </header>
         {children}
+        <footer className="foot mt-12 flex flex-wrap items-baseline justify-between gap-3 border-t border-white/70 pt-4 font-mono text-[0.72rem] tracking-[0.12em] text-white uppercase">
+          <span className="opacity-90">© f00 · MIT · cel</span>
+          <a
+            className="foot-stars text-white/90 no-underline hover:text-white"
+            href="https://github.com/f00-sh/cel"
+            rel="noopener noreferrer"
+            data-f00-stars
+            data-repo="f00-sh/cel"
+          >
+            ★ …
+          </a>
+        </footer>
       </div>
     </div>
   );

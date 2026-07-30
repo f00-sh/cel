@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { HYPER } from "@/lib/model";
+import { Shell } from "@/components/ui";
 
 function Section({
   n,
@@ -24,19 +25,21 @@ function Section({
 export function MethodologyPage() {
   const { k, C0, tau } = HYPER;
   return (
-    <div className="poster-bg poster-grain relative min-h-dvh">
-      <div className="shell-inner mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-6 flex items-center justify-between gap-3">
+    <Shell
+      topRight={
+        <span className="font-mono text-[0.65rem] tracking-[0.2em] text-white/80 uppercase">
+          Spec · v1
+        </span>
+      }
+    >
+        <div className="mb-6">
           <Link
             to="/"
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border hover:bg-surface hover:text-fg"
+            className="inline-flex min-h-9 items-center gap-1.5 border border-white/40 px-2.5 py-1.5 text-xs font-medium text-white/90 no-underline transition-colors hover:border-white hover:text-white"
           >
             <ArrowLeft className="size-3.5" aria-hidden />
             Assessment
           </Link>
-          <span className="font-mono text-[0.65rem] tracking-[0.2em] text-faint uppercase">
-            Spec · v1
-          </span>
         </div>
         <header className="step-panel">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
@@ -204,15 +207,14 @@ export function MethodologyPage() {
           </Section>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8">
+        <div className="mt-12 border-t border-white/40 pt-8">
           <Link
             to="/"
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-fg px-6 text-sm font-semibold text-bg transition-opacity hover:opacity-92"
+            className="inline-flex min-h-12 items-center justify-center border border-black bg-black px-6 text-sm font-semibold text-white no-underline transition-opacity hover:opacity-92"
           >
             Take the assessment
           </Link>
         </div>
-      </div>
-    </div>
+    </Shell>
   );
 }
