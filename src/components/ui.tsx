@@ -1,7 +1,13 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Check, Info } from "lucide-react";
 import type { PrefillTrace } from "@/lib/x-import";
+
+declare global {
+  interface Window {
+    f00Chrome?: { bootstrap: (doc?: Document) => void };
+  }
+}
 
 export function Shell({
   children,
@@ -10,43 +16,31 @@ export function Shell({
   children: ReactNode;
   topRight?: ReactNode;
 }) {
+  // Shared header/footer come from f00-chrome.js (Worker-injected). No local chrome markup.
+  useEffect(() => {
+    window.f00Chrome?.bootstrap(document);
+  });
+
   return (
-    <div className="poster-bg poster-grain relative min-h-dvh">
-      <div className="shell-inner mx-auto max-w-lg px-4 pb-10 pt-5 sm:max-w-xl sm:px-6 sm:pb-14 sm:pt-8 lg:max-w-2xl">
-        <header className="mb-6 flex items-center justify-between gap-3">
-          <a
-            href="https://f00.sh/"
-            className="brand group inline-flex items-baseline gap-1.5 font-mono text-[0.7rem] tracking-[0.18em] uppercase no-underline"
-            aria-label="f00 home"
+    <div className="poster-bg poster-grain relative min-h-dvh w-full">
+      {/*
+        Full hub-width column (68rem), not a phone-width card.
+        data-f00-no-press: keep assessment copy readable (no glyph entropy).
+      */}
+      <div
+        className="shell-inner mx-auto w-full max-w-[68rem] px-4 pb-12 pt-6 sm:px-6 sm:pb-16 sm:pt-8 lg:px-8"
+        data-f00-no-press="1"
+      >
+        <div className="mb-6 flex flex-wrap items-center justify-end gap-3">
+          <Link
+            to="/"
+            className="font-mono text-[0.65rem] tracking-[0.16em] uppercase no-underline"
           >
-            <span className="brand-mark text-[1.15rem] normal-case tracking-[0.12em]">
-              f00
-            </span>
-            <span className="brand-sub opacity-85">/cel</span>
-          </a>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              className="font-mono text-[0.65rem] tracking-[0.16em] uppercase no-underline"
-            >
-              cel index
-            </Link>
-            {topRight}
-          </div>
-        </header>
+            cel index
+          </Link>
+          {topRight}
+        </div>
         {children}
-        <footer className="foot mt-12 flex flex-wrap items-baseline justify-between gap-3 pt-4 font-mono text-[0.72rem] tracking-[0.12em] uppercase">
-          <span className="opacity-90">© f00 · MIT · cel</span>
-          <a
-            className="foot-stars no-underline"
-            href="https://github.com/f00-sh/cel"
-            rel="noopener noreferrer"
-            data-f00-stars
-            data-repo="f00-sh/cel"
-          >
-            ★ …
-          </a>
-        </footer>
       </div>
     </div>
   );

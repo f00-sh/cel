@@ -278,19 +278,19 @@ export function AssessmentPage() {
             <h1 className="mt-5 font-display text-[2.65rem] font-semibold leading-[1.05] tracking-tight text-fg sm:text-5xl">
               Cel Index
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-muted sm:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg md:text-xl">
               Compute your Femcel or Incel Index from the formal product model. Optional X profile
               priors. Transparent factors. Shareable score card.
             </p>
-            <div className="panel math-mono mx-auto mt-8 max-w-md px-4 py-5 text-sm leading-relaxed text-fg/90 sm:text-base">
-              <p className="text-center text-[0.95rem] tracking-wide text-accent-soft sm:text-base">
+            <div className="panel math-mono mx-auto mt-8 max-w-2xl px-5 py-6 text-sm leading-relaxed text-fg/90 sm:text-base md:text-lg">
+              <p className="text-center text-[0.95rem] tracking-wide text-accent-soft sm:text-base md:text-lg">
                 F = I · (D − S)₊ · B · σ(k(C − C₀)) · ρ · Ψ
               </p>
-              <p className="mt-3 text-center font-sans text-xs text-faint">
+              <p className="mt-3 text-center font-sans text-xs text-faint sm:text-sm">
                 positive classification when F &gt; τ
               </p>
             </div>
-            <ul className="panel mx-auto mt-6 max-w-sm space-y-3 px-4 py-4 text-left text-sm text-muted">
+            <ul className="panel mx-auto mt-6 max-w-xl space-y-3 px-5 py-5 text-left text-sm text-muted sm:text-base">
               {[
                 "Questions map 1:1 onto model variables",
                 "Optional X import pre-fills I, C, M, R from public profile aggregates",

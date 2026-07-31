@@ -75,6 +75,18 @@ body {
 .shell-inner {
   position: relative;
   z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Assessment steps are full-width page sections — NOT cream phone cards */
+.step-panel {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  background: transparent !important;
+  border: 0 !important;
+  color: inherit !important;
 }
 
 /* Custom range */
@@ -218,12 +230,20 @@ html, body, #root {
 body {
   color: #D0D5DB !important;
 }
-/* common app surfaces → hospital cream + poppy type (never pure white) */
-.card, .panel, [class*="card"], [class*="panel"], [class*="surface"] {
+/*
+ * Hospital cream only on real cards/panels.
+ * Do NOT match step-panel / shell-inner via [class*="panel"] — that
+ * turned the whole app into a tiny cream iframe on desktop.
+ */
+.card,
+.panel,
+.panel-soft,
+.feature-card,
+.doc-card {
   background: #E8DFD4 !important;
   color: #D44A18 !important;
   border-radius: 0 !important;
-  border-color: #B8BEC2 !important;
+  border: 2px solid #B8BEC2 !important;
 }
 
 
@@ -270,9 +290,41 @@ body {
 .text-white, .text-zinc-50, .text-neutral-50 {
   color: #D0D5DB !important;
 }
+/* Titles on sky: silver. Titles inside cream cards: poppy. */
 h1, h2, h3 {
   color: #D0D5DB !important;
   font-family: var(--f00-font-brand, "Onyx", serif) !important;
+}
+.panel h1,
+.panel h2,
+.panel h3,
+.card h1,
+.card h2,
+.card h3,
+.step-panel h1,
+.step-panel h2,
+.step-panel h3,
+.shell-inner h1,
+.shell-inner h2,
+.shell-inner h3 {
+  color: #D44A18 !important;
+}
+/* Landing lede + body on sky: cream, not silver-on-cream wash */
+.step-panel,
+.shell-inner {
+  color: #EDE6DE;
+}
+.step-panel .text-muted,
+.shell-inner .text-muted {
+  color: rgba(237, 230, 222, 0.82) !important;
+}
+.step-panel .panel,
+.step-panel .panel * {
+  color: #D44A18 !important;
+}
+.step-panel .panel .text-faint,
+.step-panel .panel .text-muted {
+  color: rgba(138, 30, 16, 0.75) !important;
 }
 button, .btn, a[class*="rounded"] {
   border-radius: 0 !important;
