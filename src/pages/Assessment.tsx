@@ -297,7 +297,7 @@ export function AssessmentPage() {
                 "Result includes factor decomposition + PNG score card for X",
               ].map((t) => (
                 <li key={t} className="flex gap-2.5">
-                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-fg/55" />
+                  <span className="mt-2 size-1.5 shrink-0 rounded-none bg-fg/55" />
                   <span className="leading-snug">{t}</span>
                 </li>
               ))}
@@ -305,7 +305,7 @@ export function AssessmentPage() {
             <button
               type="button"
               onClick={() => go("x")}
-              className="mt-10 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-fg px-6 py-3 text-sm font-semibold text-bg shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[opacity,transform] hover:opacity-92 active:scale-[0.99] sm:w-auto sm:min-w-[15rem]"
+              className="mt-10 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-none bg-fg px-6 py-3 text-sm font-semibold text-bg shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[opacity,transform] hover:opacity-92 active:scale-[0.99] sm:w-auto sm:min-w-[15rem]"
             >
               Start assessment
               <ArrowRight className="size-4" aria-hidden />
@@ -348,14 +348,14 @@ export function AssessmentPage() {
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
-                  className="min-h-12 w-full rounded-xl border border-border bg-surface py-3 pr-3 pl-8 text-base text-fg outline-none placeholder:text-faint focus:border-border-strong"
+                  className="min-h-12 w-full rounded-none border border-border bg-surface py-3 pr-3 pl-8 text-base text-fg outline-none placeholder:text-faint focus:border-border-strong"
                 />
               </div>
               <button
                 type="button"
                 disabled={looking || handleInput.trim().length < 1}
                 onClick={() => void doImport()}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong hover:bg-surface-2 disabled:opacity-40"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-none border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong hover:bg-surface-2 disabled:opacity-40"
               >
                 {looking ? (
                   <>
@@ -382,11 +382,11 @@ export function AssessmentPage() {
                     <img
                       src={profile.avatar}
                       alt=""
-                      className="size-12 rounded-full border border-border object-cover"
+                      className="size-12 rounded-none border border-border object-cover"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="flex size-12 items-center justify-center rounded-full bg-surface-2">
+                    <div className="flex size-12 items-center justify-center rounded-none bg-surface-2">
                       <User className="size-5 text-muted" aria-hidden />
                     </div>
                   )}
@@ -621,7 +621,7 @@ export function AssessmentPage() {
                 {survey.handle ? ` · @${survey.handle}` : ""}
               </p>
               <span
-                className={`rounded-full border px-2.5 py-1 font-mono text-[0.65rem] tracking-wide uppercase ${
+                className={`rounded-none border px-2.5 py-1 font-mono text-[0.65rem] tracking-wide uppercase ${
                   positive
                     ? "border-good/30 bg-good/10 text-good"
                     : "border-border bg-surface text-faint"
@@ -669,9 +669,9 @@ export function AssessmentPage() {
                 {breakdown.factors.map((f) => (
                   <li key={f.key} className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-2">
                     <span className="font-mono text-xs text-faint">{f.key}</span>
-                    <div className="h-2 overflow-hidden rounded-full bg-surface-2">
+                    <div className="h-2 overflow-hidden rounded-none bg-surface-2">
                       <div
-                        className="h-full rounded-full bg-fg/85 transition-[width] duration-500"
+                        className="h-full rounded-none bg-fg/85 transition-[width] duration-500"
                         style={{ width: `${Math.round(f.value * 100)}%` }}
                       />
                     </div>
@@ -700,7 +700,7 @@ export function AssessmentPage() {
                   type="button"
                   disabled={sharing}
                   onClick={() => void shareToX()}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-fg/25 bg-fg px-3 text-sm font-semibold text-bg transition-opacity hover:opacity-92 disabled:opacity-40 sm:col-span-2"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-fg/25 bg-fg px-3 text-sm font-semibold text-bg transition-opacity hover:opacity-92 disabled:opacity-40 sm:col-span-2"
                 >
                   <Share2 className="size-4" aria-hidden />
                   {sharing ? "Opening…" : "Share to X"}
@@ -709,7 +709,7 @@ export function AssessmentPage() {
                   type="button"
                   disabled={sharing}
                   onClick={() => void downloadPng()}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong disabled:opacity-40"
                 >
                   <Download className="size-4" aria-hidden />
                   PNG
@@ -717,7 +717,7 @@ export function AssessmentPage() {
                 <button
                   type="button"
                   onClick={() => void copyCaptionOnly()}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong sm:col-span-3"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-border bg-surface-2 px-3 text-sm font-semibold text-fg transition-colors hover:border-border-strong sm:col-span-3"
                 >
                   <Copy className="size-4" aria-hidden />
                   Copy caption
@@ -740,14 +740,14 @@ export function AssessmentPage() {
               <button
                 type="button"
                 onClick={() => go("desire")}
-                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong"
+                className="inline-flex min-h-12 items-center justify-center rounded-none border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong"
               >
                 Adjust answers
               </button>
               <button
                 type="button"
                 onClick={reset}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-fg px-6 text-sm font-semibold text-bg"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-none bg-fg px-6 text-sm font-semibold text-bg"
               >
                 <RotateCcw className="size-4" aria-hidden />
                 Start over

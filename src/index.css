@@ -333,3 +333,17 @@ button, .btn, a[class*="rounded"] {
 header a, footer, footer a, .foot, .foot a {
   color: #e8ecf0 !important;
 }
+
+
+/* ═══ ORGANIC INSTRUMENT (B) — printed tool, not app UI ═══ */
+button, .btn, a.btn, [class*="rounded"] {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.rounded-full, .rounded-xl, .rounded-2xl {
+  border-radius: 0 !important;
+}
+/* progress = metal plate bar, not pill */
+[role="progressbar"], .h-1, .h-1\.5, .h-2 {
+  border-radius: 0 !important;
+}

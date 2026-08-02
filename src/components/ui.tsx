@@ -50,7 +50,7 @@ export function MethodLink({ className = "" }: { className?: string }) {
   return (
     <Link
       to="/methodology"
-      className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border hover:bg-surface hover:text-fg ${className}`}
+      className={`inline-flex min-h-9 items-center gap-1.5 rounded-none border border-transparent px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-border hover:bg-surface hover:text-fg ${className}`}
     >
       <BookOpen className="size-3.5 opacity-80" aria-hidden />
       Methodology
@@ -93,7 +93,7 @@ export function Progress({
         </p>
       </div>
       <div
-        className="h-1.5 overflow-hidden rounded-full bg-surface-2"
+        className="h-1.5 overflow-hidden rounded-none bg-surface-2"
         role="progressbar"
         aria-valuenow={stepIndex + 1}
         aria-valuemin={1}
@@ -101,7 +101,7 @@ export function Progress({
         aria-label={`Step ${stepIndex + 1} of ${total}`}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-fg/70 to-fg transition-[width] duration-300 ease-out"
+          className="h-full rounded-none bg-gradient-to-r from-fg/70 to-fg transition-[width] duration-300 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -109,7 +109,7 @@ export function Progress({
         {Array.from({ length: total }, (_, i) => (
           <span
             key={i}
-            className={`h-1 flex-1 rounded-full transition-colors ${
+            className={`h-1 flex-1 rounded-none transition-colors ${
               i <= stepIndex ? "bg-fg/55" : "bg-surface-2"
             }`}
           />
@@ -139,7 +139,7 @@ export function NavButtons({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex min-h-12 min-w-[5.5rem] items-center justify-center rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong hover:bg-surface-2"
+            className="inline-flex min-h-12 min-w-[5.5rem] items-center justify-center rounded-none border border-border bg-surface px-5 text-sm font-semibold text-fg transition-colors hover:border-border-strong hover:bg-surface-2"
           >
             Back
           </button>
@@ -148,7 +148,7 @@ export function NavButtons({
           type="button"
           onClick={onNext}
           disabled={nextDisabled}
-          className="inline-flex min-h-12 flex-1 items-center justify-center rounded-full bg-fg px-6 text-sm font-semibold text-bg shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[opacity,transform] hover:opacity-92 active:scale-[0.99] disabled:opacity-40"
+          className="inline-flex min-h-12 flex-1 items-center justify-center rounded-none bg-fg px-6 text-sm font-semibold text-bg shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[opacity,transform] hover:opacity-92 active:scale-[0.99] disabled:opacity-40"
         >
           {nextLabel}
         </button>
@@ -161,7 +161,7 @@ export function PrefillBadge({ trace }: { trace?: PrefillTrace }) {
   if (!trace) return null;
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2/80 px-2 py-0.5 font-mono text-[0.65rem] text-muted"
+      className="inline-flex items-center gap-1 rounded-none border border-border bg-surface-2/80 px-2 py-0.5 font-mono text-[0.65rem] text-muted"
       title={`${trace.mapping}\n${trace.signals}`}
     >
       <Info className="size-3 shrink-0 opacity-80" aria-hidden />
@@ -207,7 +207,7 @@ export function Slider({
             </p>
           ) : null}
         </div>
-        <div className="shrink-0 rounded-lg border border-border bg-bg/40 px-2.5 py-1.5 text-right">
+        <div className="shrink-0 rounded-none border border-border bg-bg/40 px-2.5 py-1.5 text-right">
           <p className="font-mono text-lg font-semibold tabular-nums tracking-tight text-fg">
             {pct}
             <span className="text-sm font-medium text-faint">%</span>
@@ -255,14 +255,14 @@ export function PathCards({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.id)}
-            className={`group flex items-start gap-3 rounded-2xl border px-4 py-4 text-left transition-[border-color,background,transform] active:scale-[0.995] ${
+            className={`group flex items-start gap-3 rounded-none border px-4 py-4 text-left transition-[border-color,background,transform] active:scale-[0.995] ${
               on
                 ? "border-fg/35 bg-surface shadow-[inset_0_0_0_1px_rgba(244,244,245,0.06)]"
                 : "border-border bg-surface/30 hover:border-border-strong hover:bg-surface/60"
             }`}
           >
             <span
-              className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+              className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-none border transition-colors ${
                 on ? "border-fg bg-fg text-bg" : "border-border-strong text-transparent"
               }`}
             >
